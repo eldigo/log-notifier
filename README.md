@@ -3,6 +3,13 @@
 This script monitor's log files (or another text based files) and run's a specified command when a key 'word' or 'phrase' is hit.
 The parameters like log file name,path,command and filters must be specified in a jSON formatted file
 
+A command could be for instance to send the LOG through Telegram
+```
+/usr/local/sbin/telegram-notify --quiet --text LOG_MESSAGE
+```
+
+The 'LOG_MESSAGE' contains the actual log.
+
 
 Make a JSON config_file_name.json with content:
 ```
