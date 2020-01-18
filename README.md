@@ -55,7 +55,7 @@ How to run:
 ```
 ./script.sh config_file.json
 ```
-    or
+or
 ```
 /path/to/script.sh /path/to/config_file.json
 ```
@@ -69,7 +69,6 @@ For Ubuntu: In /etc/systemd/system make log_notify.service with content:
 [Unit]
 Description=log_notify Service
 After=multi-user.target
-#Conflicts=getty@tty1.service
 
 [Service]
 Type=simple
@@ -86,11 +85,9 @@ SyslogIdentifier=log_notify
 [Install]
 WantedBy=multi-user.target
 ```
-
 ```
 systemctl enable log_notify
 ```
-
 ```
 systemctl start log_notify
 ```
