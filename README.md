@@ -47,8 +47,8 @@ Make a JSON config_file_name.json with content:
 ]
 ```
 
-Note that LOG_MESSAGE which contains the log that was hit in self
-Its is not mandatory to use.
+Note that LOG_MESSAGE which contains the log that was hit. 
+Its not mandatory to use.
     
 How to run:
 
