@@ -1,0 +1,32 @@
+[
+    {
+        "name": "LOG file 1",
+        "path": "/path/to/log.log",
+        "command": "/bin/bash somekind_scripts.sh LOG_MESSAGE",
+        "filters":
+            [
+                {
+                	"name": "Month",
+			"filter": "Jan"
+                },
+                {
+                	"name": "Filter Title",
+                	"filter": "Filter String"
+                },
+                {
+                	"name": "Third filter",
+                	"filter": "Text"
+                }
+            ]
+},
+    {
+        "name": "System LOG",
+        "path": "/path/to/syslog",
+        "command": "perl somekind_scripts.pl LOG_MESSAGE",
+        "filters":
+            [
+                { "name": "Server Name", "filter": "Server" },
+                { "name": "Error filter", "filter": "ERR" }
+            ]
+    }
+]
