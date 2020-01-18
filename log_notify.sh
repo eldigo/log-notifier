@@ -82,7 +82,7 @@ startWatching(){
     		value=`jq -r '.['$LOGNR'].filters['$j'].filter' "$CONFIGFILE"`
     		echo " '$value'"
 			FILTERARRAY+=(${value// /.})
-
+			sleep 5
 			unset $value
 			unset $fname
 
