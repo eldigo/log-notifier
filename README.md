@@ -1,9 +1,11 @@
+**Log Filter Notifier**
+
 This script monitor's log files (or another text based files) and run's a specified command when a key 'word' or 'phrase' is hit.
 The parameters like log file name,path,command and filters must be specified in a jSON formatted file
 
 
 Make a JSON config_file_name.json with content:
-____________________________________________________
+```
 [
     {
         "name": "LOG file 1",
@@ -36,22 +38,27 @@ ____________________________________________________
             ]
     }
 ]
-___________________________________________
+```
 
-    *Note that LOG_MESSAGE which contains the log that was hit in self
-     It's is not mandatory to use.
+Note that LOG_MESSAGE which contains the log that was hit in self
+Its is not mandatory to use.
     
-    How to run:
-    ./script.sh config_file.json
+How to run:
+
+```
+./script.sh config_file.json
+```
     or
-    ./path/to/script.sh /path/to/config_file.json
+```
+/path/to/script.sh /path/to/config_file.json
+```
 
 
 This script can be runned as a sevice.
 
 For Ubuntu: In /etc/systemd/system make log_notify.service with content:
 
-____________________________________________
+```
 [Unit]
 Description=log_notify Service
 After=multi-user.target
@@ -71,9 +78,12 @@ SyslogIdentifier=log_notify
 
 [Install]
 WantedBy=multi-user.target
-_____________________________________________
+```
 
-
+```
 systemctl enable log_notify
+```
 
+```
 systemctl start log_notify
+```
