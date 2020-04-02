@@ -1,7 +1,8 @@
 **Log Filter Notifier**
 
-This script monitor's log files (or another text based files) and run's a specified command when a key 'word' or 'phrase' is hit.
-The parameters like log file name,path,command and filters must be specified in a jSON formatted file
+This script monitor's multiple log files (or another text based files) and run's a specified command when a key 'word' or 'phrase' is hit. A inore text can set.
+
+The parameters like log file name,path,command, ignore and filters must be specified in a jSON formatted file
 
 A command could be for instance to send the LOG through Telegram
 ```
@@ -22,15 +23,18 @@ Make a JSON config_file_name.json with content:
             [
                 { 
                 	"name": "Month", "
-                	filter": "Jan" 
+                	filter": "Jan",
+                    "ignore": ""
                 },
                 { 
                 	"name": "Filter Title", 
-                	"filter": "Filter String" 
+                	"filter": "Filter String",
+                    "ignore": "Text"
                 },
                 { 
                 	"name": "Third filter", 
-                	"filter": "Text" 
+                	"filter": "Text",
+                    "ignore": "Text" 
                 }
             ]
 },
@@ -40,8 +44,8 @@ Make a JSON config_file_name.json with content:
         "command": "perl somekind_scripts.pl LOG_MESSAGE",
         "filters":
             [
-                { "name": "Server Name", "filter": "Server" },
-                { "name": "Error filter", "filter": "ERR" }
+                { "name": "Server Name", "filter": "Server","ignore": "Text" },
+                { "name": "Error filter", "filter": "ERR","ignore": "Text" }
             ]
     }
 ]

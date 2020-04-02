@@ -14,15 +14,18 @@ USAGE=$(cat <<-END
             [
                 {
                 	"name": "Month",
-                	"filter": "Jan"
+                	"filter": "Jan",
+                	"ignore": "" 
                 },
                 {
                 	"name": "Filter Title",
-                	"filter": "Filter String" 
+                	"filter": "Filter String",
+                	"ignore": "Text" 
                 },
                 {
                 	"name": "Third filter", 
-                	"filter": "Text" 
+                	"filter": "Text",
+                	"ignore": "Text" 
                 }
             ]
 },
@@ -82,9 +85,15 @@ startWatching(){
     		value=`jq -r '.['$LOGNR'].filters['$j'].filter' "$CONFIGFILE"`
     		echo " '$value'"
 			FILTERARRAY+=(${value// /.})
+			#get ignore
+    		ignore=`jq -r '.['$LOGNR'].filters['$j'].ignore' "$CONFIGFILE"`
+    		echo "Ignore: '$ignore'"
+			IGNOREARRAY+=(${ignore// /.})
+
 			sleep 5
 			unset $value
 			unset $fname
+			unset $ignore
 
        	done
 
@@ -96,7 +105,7 @@ startWatching(){
 			for ((k = 0; k < $FILTERCOUNT; k++))
 			do
 				
-				if [[ "$LINE" == *"${FILTERARRAY["$k"]//./ }"* && "$LINE" != *"${LOGNAME}"* ]]; then
+				if [[ "$LINE" == *"${FILTERARRAY["$k"]//./ }"* && "$LINE" != *"${IGNOREARRAY["$k"]//./ }"* && "$LINE" != *"${LOGNAME}"* ]]; then
 					echo "_________________START ${LOGNAME} NOTIFY_________________"
 		        	echo "${LOGNAME} Filter Name: '${FILTERNAMEARRAY[$k]//./ }'"
 		        	echo "${LOGNAME} Filter: '${FILTERARRAY[$k]//./ }'"

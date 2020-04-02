@@ -7,15 +7,18 @@
             [
                 {
                 	"name": "Month",
-			"filter": "Jan"
+			         "filter": "Jan",
+                     "ignore": "Text"
                 },
                 {
                 	"name": "Filter Title",
-                	"filter": "Filter String"
+                	"filter": "Filter String",
+                    "ignore": "Text"
                 },
                 {
                 	"name": "Third filter",
-                	"filter": "Text"
+                	"filter": "Text",
+                    "ignore": "Text"
                 }
             ]
 },
