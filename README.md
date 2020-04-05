@@ -1,6 +1,6 @@
 **Log Filter Notifier**
 
-This script monitor's multiple log files (or another text based files) and run's a specified command when a key 'word' or 'phrase' is hit. A inore text can set.
+This script monitor's multiple log files (or another text based files) and run's a specified command when a key 'word' or 'phrase' is hit. Multiple inore texts can be set, separated by *
 
 The parameters like log file name,path,command, ignore and filters must be specified in a jSON formatted file
 
@@ -21,20 +21,20 @@ Make a JSON config_file_name.json with content:
         "command": "/bin/bash somekind_scripts.sh LOG_MESSAGE",
         "filters":
             [
-                { 
-                	"name": "Month", "
-                	filter": "Jan",
-                    "ignore": ""
+                {
+                    "name": "Month",
+                    "filter": "Jan",
+                    "ignore": "" 
                 },
-                { 
-                	"name": "Filter Title", 
-                	"filter": "Filter String",
-                    "ignore": "Text"
-                },
-                { 
-                	"name": "Third filter", 
-                	"filter": "Text",
+                {
+                    "name": "Filter Title",
+                    "filter": "Filter String",
                     "ignore": "Text" 
+                },
+                {
+                    "name": "Third filter", 
+                    "filter": "Text",
+                    "ignore": "Text*text2" 
                 }
             ]
 },
@@ -44,8 +44,8 @@ Make a JSON config_file_name.json with content:
         "command": "perl somekind_scripts.pl LOG_MESSAGE",
         "filters":
             [
-                { "name": "Server Name", "filter": "Server","ignore": "Text" },
-                { "name": "Error filter", "filter": "ERR","ignore": "Text" }
+                { "name": "Server Name", "filter": "Server", "ignore": "" },
+                { "name": "Error filter", "filter": "ERR" , "ignore": "text*text2"}
             ]
     }
 ]

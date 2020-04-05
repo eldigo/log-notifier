@@ -6,19 +6,19 @@
         "filters":
             [
                 {
-                	"name": "Month",
-			         "filter": "Jan",
-                     "ignore": "Text"
+                    "name": "Month",
+                    "filter": "Jan",
+                    "ignore": "" 
                 },
                 {
-                	"name": "Filter Title",
-                	"filter": "Filter String",
-                    "ignore": "Text"
+                    "name": "Filter Title",
+                    "filter": "Filter String",
+                    "ignore": "Text" 
                 },
                 {
-                	"name": "Third filter",
-                	"filter": "Text",
-                    "ignore": "Text"
+                    "name": "Third filter", 
+                    "filter": "Text",
+                    "ignore": "Text*text2" 
                 }
             ]
 },
@@ -28,8 +28,8 @@
         "command": "perl somekind_scripts.pl LOG_MESSAGE",
         "filters":
             [
-                { "name": "Server Name", "filter": "Server" },
-                { "name": "Error filter", "filter": "ERR" }
+                { "name": "Server Name", "filter": "Server", "ignore": "" },
+                { "name": "Error filter", "filter": "ERR" , "ignore": "text*text2"}
             ]
     }
 ]
