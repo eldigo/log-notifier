@@ -79,6 +79,8 @@ startWatching(){
 			IGNOREARRAY+=(${ignore// /.})
 			sleep 5
 			ignore=""
+			value=""
+			fname=""
 			unset $value
 			unset $fname
 			unset $ignore
@@ -104,8 +106,8 @@ startWatching(){
 			        	echo "${LOGNAME} Filter Name: '${FILTERNAMEARRAY[$k]//./ }'"
 			        	echo "${LOGNAME} Filter: '${FILTERARRAY[$k]//./ }'"
 			        	echo "${LOGNAME} Log: $LINE"
-			        	LINE="${LINE["$k"]//\"/ }"
-			       		MESSAGE="${LOGNAME}: FILTER NAME: '${FILTERNAMEARRAY[$k]}' FILTER: '${FILTERARRAY[$k]}' LOG: $LINE"
+			        	# LINE="${LINE["$k"]//\"/ }"
+			       		MESSAGE="${LOGNAME}: $LINE"
 						MESSAGE=${MESSAGE//./ }
 			        	echo "${LOGNAME} Message: $MESSAGE"
 			        	echo "${LOGNAME} Command: $COMMAND"
