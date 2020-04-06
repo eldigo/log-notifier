@@ -120,6 +120,36 @@ startWatching(){
 		echo "$USAGE"
 	fi
 }
+
+CONFIGFILE="log_notify.json"
+
+checkJSONelements(){
+    allMainElement=("name" "path" "command" "filters")
+    allFilterElement=("name" "filter" "ignore")
+    logcount=`jq -r 'length' "$CONFIGFILE"` 
+    
+    for (( c = 0; c < $logcount; c++ )); do
+        for element in "${allMainElement[@]}"
+        do
+            elementValue=`jq -r ".[$c].\"$element\"" "$CONFIGFILE"`
+            if [[ $elementValue == null ]]; then
+                return 1 #false
+                break
+            fi
+        done
+
+        for element in "${allFilterElement[@]}"
+        do
+            elementValue=`jq -r ".[$c].filters[0].\"$element\"" "$CONFIGFILE"`
+            if [[ $elementValue == null ]]; then
+                return 1 #false
+                break
+            fi
+        done
+        return 0 #true 
+    done
+}
+
 #######START##############
 #load config file
 if [[ $1 == */* ]]; then
@@ -131,13 +161,21 @@ fi
 echo "Processing Config file: $CONFIGFILE"
 if [[ -f "$CONFIGFILE" ]]; then
 	if jq -e . >/dev/null 2>&1 <<< cat "$CONFIGFILE"; then
-	    echo "Config JSON file Valid"
-		logcount=`jq -r 'length' "$CONFIGFILE"`
-	    #get LOGPATH 
-	    for (( i = 0; i < $logcount ; i++ )); do
-	    	sleep 2
-	    	startWatching $i & # Put a function in the background
-		done
+	    
+	    if checkJSONelements $1 ; then
+		    echo "Config JSON file Valid and Complete"
+			logcount=`jq -r 'length' "$CONFIGFILE"`
+		    #get LOGPATH 
+		    for (( i = 0; i < $logcount ; i++ )); do
+		    	sleep 2
+		    	startWatching $i & # Put a function in the background
+			done
+		else
+		    echo "Missing $element"
+		    echo "$USAGE"
+			exit 0
+		fi
+	    
 	else
 	    echo "!!!!ERROR: Failed to parse JSON file ${LOGFILE}"
 		echo "$USAGE"
