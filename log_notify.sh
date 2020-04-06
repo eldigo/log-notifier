@@ -55,22 +55,23 @@ startWatching(){
 	LOGNAME=`jq -r '.['$LOGNR'].name' "$CONFIGFILE"`
 	COMMAND=`jq -r '.['$LOGNR'].command' "$CONFIGFILE"`
 	FILTERCOUNT=`jq '.['$LOGNR'].filters | length' "$CONFIGFILE"` 
-	echo "Loading Config for ${FILTERCOUNT} log(s)"
+	echo ______________________________________________________
+	echo "Loading Config for ${FILTERCOUNT} filters(s)"
 	if [[ -f "${LOGFILE}" ]]; then
 		echo "__________________${LOGNAME}__________________"
 		echo "Name: ${LOGNAME}"
 		echo "File: ${LOGFILE}"
-		echo "Filters"
 	    #get FILTERS and make array
 	    for (( j = 0; j < $FILTERCOUNT ; j++ )); do
 			fnr=$((j+1))
 			#get filternames
 			fname=`jq -r '.['$LOGNR'].filters['$j'].name' "$CONFIGFILE"`
-    		echo "$fnr: $fname"
+    		echo "Filter $fnr"
+    		echo "Name: $fname"
 			FILTERNAMEARRAY+=(${fname// /.})
 			#get filters
     		value=`jq -r '.['$LOGNR'].filters['$j'].filter' "$CONFIGFILE"`
-    		echo " '$value'"
+    		echo "Filter: '$value'"
 			FILTERARRAY+=(${value// /.})
 			#get ignore
     		ignore=`jq -r '.['$LOGNR'].filters['$j'].ignore' "$CONFIGFILE"`
@@ -171,7 +172,7 @@ if [[ -f "$CONFIGFILE" ]]; then
 		    	startWatching $i & # Put a function in the background
 			done
 		else
-		    echo "Missing $element"
+		    echo "!!!!ERROR: Failed to parse JSON file ${LOGFILE}; Missing $element"
 		    echo "$USAGE"
 			exit 0
 		fi
