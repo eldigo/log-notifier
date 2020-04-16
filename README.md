@@ -1,8 +1,9 @@
 **Log Filter Notifier**
 
-This script monitor's multiple log files (or another text based files) and run's a specified command when a key 'word' or 'phrase' is hit. Multiple inore texts can be set, separated by *
+This script monitor's multiple log files (or another text based files) and run's a specified command when a key 'word' or 'phrase' is hit. Multiple inore texts can be set, separated by * 
+A timeout value in seconds , is added to prevent notify flooding.
 
-The parameters like log file name,path,command, ignore and filters must be specified in a jSON formatted file
+The parameters like log file name,path,command, timeout, ignore and filters must be specified in a jSON formatted file
 
 A command could be for instance to send the LOG through Telegram
 ```
@@ -19,6 +20,7 @@ Make a JSON config_file_name.json with content:
         "name": "LOG file 1",
         "path": "/path/to/log.log",
         "command": "/bin/bash somekind_scripts.sh LOG_MESSAGE",
+        "timeout": 120,
         "filters":
             [
                 {
@@ -42,6 +44,7 @@ Make a JSON config_file_name.json with content:
         "name": "System LOG",
         "path": "/path/to/syslog",
         "command": "perl somekind_scripts.pl LOG_MESSAGE",
+        "timeout": 80,
         "filters":
             [
                 { "name": "Server Name", "filter": "Server", "ignore": "" },

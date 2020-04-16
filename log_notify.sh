@@ -9,6 +9,7 @@ USAGE=$(cat <<-END
         "name": "LOG file 1",
         "path": "/path/to/log.log",
         "command": "/bin/bash somekind_scripts.sh LOG_MESSAGE",
+        "timeout": 120,
         "filters":
             [
                 {
@@ -32,6 +33,7 @@ USAGE=$(cat <<-END
         "name": "System LOG",
         "path": "/path/to/syslog",
         "command": "perl somekind_scripts.pl LOG_MESSAGE",
+        "timeout": 120,
         "filters":
             [
                 { "name": "Server Name", "filter": "Server", "ignore": "" },
@@ -54,19 +56,22 @@ startWatching(){
 	LOGFILE=`jq -r '.['$LOGNR'].path' "$CONFIGFILE"`
 	LOGNAME=`jq -r '.['$LOGNR'].name' "$CONFIGFILE"`
 	COMMAND=`jq -r '.['$LOGNR'].command' "$CONFIGFILE"`
-	FILTERCOUNT=`jq '.['$LOGNR'].filters | length' "$CONFIGFILE"` 
-	echo ______________________________________________________
-	echo "Loading Config for ${FILTERCOUNT} filters(s)"
+	TIMEOUTSEC=`jq -r '.['$LOGNR'].timeout' "$CONFIGFILE"`
+	FILTERCOUNT=`jq '.['$LOGNR'].filters | length' "$CONFIGFILE"`
+	TIMEOUTTIME=`date +%s` 
+	echo "_________________________________________________________"
 	if [[ -f "${LOGFILE}" ]]; then
-		echo "__________________${LOGNAME}__________________"
-		echo "Name: ${LOGNAME}"
-		echo "File: ${LOGFILE}"
+		echo "                    ${LOGNAME}"
+    	echo "_________________________________________________________"
+		echo "LogName: ${LOGNAME}"
+		echo "LogFile location: ${LOGFILE}"
 	    #get FILTERS and make array
 	    for (( j = 0; j < $FILTERCOUNT ; j++ )); do
 			fnr=$((j+1))
 			#get filternames
 			fname=`jq -r '.['$LOGNR'].filters['$j'].name' "$CONFIGFILE"`
-    		echo "Filter $fnr"
+    		echo "------------------"
+    		echo "Filter number $fnr"
     		echo "Name: $fname"
 			FILTERNAMEARRAY+=(${fname// /.})
 			#get filters
@@ -77,7 +82,7 @@ startWatching(){
     		ignore=`jq -r '.['$LOGNR'].filters['$j'].ignore' "$CONFIGFILE"`
     		echo "Ignore: '$ignore'"
 			IGNOREARRAY+=(${ignore// /.})
-			sleep 5
+			# sleep 5
 			ignore=""
 			value=""
 			fname=""
@@ -85,34 +90,49 @@ startWatching(){
 			unset $fname
 			unset $ignore
        	done
-    	echo "_________________________________________________________"
+		echo "------------------"
 	  	echo "$(date)"
 	  	echo "Start Watching: $LOGFILE ...."
+	  	echo ""
 		tail -fn0 $LOGFILE | \
 		while read LINE ; do
 			for ((k = 0; k < $FILTERCOUNT; k++))
 			do
 				if [[ "$LINE" == *"${FILTERARRAY["$k"]//./ }"* && "$LINE" != *"${LOGNAME}"* ]]; then
-					IFS='*' read -r -a IGNORES <<< "${IGNOREARRAY["$k"]//./ }"
-					COUNT=0
-					for IGNORE in "${IGNORES[@]}"
-					do
-						if [[ "$LINE" == *"${IGNORE//./ }"* ]]; then
-							COUNT=$((COUNT+1))
-						fi
-					done
-					if [[ $COUNT == 0 ]]; then
-						echo "_________________START ${LOGNAME} NOTIFY_________________"
-			        	echo "${LOGNAME} Filter Name: '${FILTERNAMEARRAY[$k]//./ }'"
-			        	echo "${LOGNAME} Filter: '${FILTERARRAY[$k]//./ }'"
-			        	echo "${LOGNAME} Log: $LINE"
-			        	# LINE="${LINE["$k"]//\"/ }"
-			       		MESSAGE="${LOGNAME}: $LINE"
-						MESSAGE=${MESSAGE//./ }
-			        	echo "${LOGNAME} Message: $MESSAGE"
-			        	echo "${LOGNAME} Command: $COMMAND"
-			        	EXCECUTE="${COMMAND/LOG_MESSAGE/"\""$MESSAGE"\""}"
-						eval $EXCECUTE
+					CURRTIME=`date +%s`
+					DIFFTIME="$((CURRTIME-TIMEOUTTIME))"
+					echo "_________________START ${LOGNAME} NOTIFY_________________"
+					echo "Current Time: $CURRTIME"
+					echo "Timeout Time: $TIMEOUTTIME"
+					echo "Time Difference: $DIFFTIME"
+					echo "Timeout value: $TIMEOUTSEC"
+					if [[ $DIFFTIME -gt $TIMEOUTSEC ]]; then
+						IFS='*' read -r -a IGNORES <<< "${IGNOREARRAY["$k"]//./ }"
+						COUNT=0
+						for IGNORE in "${IGNORES[@]}"
+						do
+							if [[ "$LINE" == *"${IGNORE//./ }"* ]]; then
+								COUNT=$((COUNT+1))
+							fi
+						done
+						if [[ $COUNT == 0 ]]; then
+				        	echo "${LOGNAME} Filter Name: '${FILTERNAMEARRAY[$k]//./ }'"
+				        	echo "${LOGNAME} Filter: '${FILTERARRAY[$k]//./ }'"
+				        	echo "${LOGNAME} Log: $LINE"
+				       		MESSAGE="${LOGNAME}: $LINE"
+							MESSAGE=${MESSAGE//./ }
+				        	echo "${LOGNAME} Message: $MESSAGE"
+				        	echo "${LOGNAME} Command: $COMMAND"
+				        	EXCECUTE="${COMMAND/LOG_MESSAGE/"\""$MESSAGE"\""}"
+							eval $EXCECUTE
+				        	echo "_________________END ${LOGNAME} NOTIFY___________________"
+				        	TIMEOUTTIME=`date +%s`
+						else
+							echo "Notify cancelled due to ignore filter "
+				        	echo "_________________END ${LOGNAME} NOTIFY___________________"
+				        fi
+					else
+						echo "Notify timeout; Already notified past $TIMEOUTSEC seconds"
 			        	echo "_________________END ${LOGNAME} NOTIFY___________________"
 					fi
 		        fi		
@@ -127,7 +147,7 @@ startWatching(){
 CONFIGFILE="log_notify.json"
 
 checkJSONelements(){
-    allMainElement=("name" "path" "command" "filters")
+    allMainElement=("name" "path" "command" "filters" "timeout")
     allFilterElement=("name" "filter" "ignore")
     logcount=`jq -r 'length' "$CONFIGFILE"` 
     
@@ -166,11 +186,12 @@ if [[ -f "$CONFIGFILE" ]]; then
 	if jq -e . >/dev/null 2>&1 <<< cat "$CONFIGFILE"; then
 	    
 	    if checkJSONelements $1 ; then
+	    	sleep 3
 		    echo "Config JSON file Valid and Complete"
 			logcount=`jq -r 'length' "$CONFIGFILE"`
 		    #get LOGPATH 
 		    for (( i = 0; i < $logcount ; i++ )); do
-		    	sleep 2
+		    	sleep 1
 		    	startWatching $i & # Put a function in the background
 			done
 		else
